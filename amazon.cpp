@@ -9,6 +9,9 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
+
+// test for ConsoleInterface.AddTwoItems and ConsoleInterface.AddTwoProductsTwoUsers
 
 using namespace std;
 struct ProdNameSorter {
@@ -29,7 +32,7 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
 
 
 
@@ -100,9 +103,33 @@ int main(int argc, char* argv[])
                 done = true;
             }
 	    /* Add support for other commands here */
-
-
-
+            else if (cmd == "ADD") {
+                string username;
+                int hit_num;
+                if (ss >> username >> hit_num && hit_num > 0 && hit_num <= hits.size()) {
+                    Product* selectedProduct = hits[hit_num - 1];
+                    ds.addToCart(username, selectedProduct);
+                } else {
+                    cout << "Invalid request" << endl;
+                }
+                
+            }
+            else if (cmd == "VIEWCART") {
+                string username;
+                vector<Product*> userCart;
+                if (ss >> username) {
+                    userCart = ds.getUserCart(username);
+                }
+                if (!userCart.empty()) {
+                    ds.displayCart(userCart);
+                }
+            }
+            else if (cmd == "BUYCART") {
+                string username;
+                if (ss >> username) {
+                    ds.buyCart(username);
+                }
+            }
 
             else {
                 cout << "Unknown command" << endl;
